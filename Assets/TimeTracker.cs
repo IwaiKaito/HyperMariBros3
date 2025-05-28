@@ -38,31 +38,37 @@ public class TimeTracker : MonoBehaviour
         }
     }
 
-    private void OnTriggerEnter(Collider other)
+private void OnTriggerEnter(Collider other)
+{
+    if (!goalReached && other.CompareTag("Goal"))
     {
-        if (!goalReached && other.CompareTag("Goal"))
+        goalReached = true;
+        isTiming = false;
+        timeText.text = "Goal! Time: " + elapsedTime.ToString("F2") + "s";
+        goalMessageText.text = "ゴールおめでとう！";
+
+        if (elapsedTime < bestTime)
         {
-            goalReached = true;
-            isTiming = false;
-            timeText.text = "Goal! Time: " + elapsedTime.ToString("F2") + "s";
-            goalMessageText.text = "ゴールおめでとう！";
+            bestTime = elapsedTime;
+            PlayerPrefs.SetFloat("BestTime", bestTime);
+            PlayerPrefs.Save();
 
-            if (elapsedTime < bestTime)
-            {
-                bestTime = elapsedTime;
-                PlayerPrefs.SetFloat("BestTime", bestTime);
-                PlayerPrefs.Save();
-
-                bestTimeText.text = "Best: " + bestTime.ToString("F2") + "s";
-            }
-
-            // ✅ 3秒後に再スタート
-            Invoke("RestartScene", 3f);
+            bestTimeText.text = "Best: " + bestTime.ToString("F2") + "s";
         }
+
+        // ✅ 3秒後に再スタート
+        Invoke("RestartScene", 3f);
     }
 
-    private void RestartScene()
+    // ✅ 敵と接触したら時間リセット
+    if (other.CompareTag("Enemy"))
     {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        elapsedTime = 0f;
+        timeText.text = "Time: 0.00s";
+
+        // 任意：時間再スタートしたことを通知する表示なども可
+        Debug.Log("敵と接触！時間をリセットしました。");
     }
+}
+
 }
