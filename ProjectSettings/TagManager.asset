@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Goal
   - SpeedBoost
+  - Enemy
   layers:
   - Default
   - TransparentFX
